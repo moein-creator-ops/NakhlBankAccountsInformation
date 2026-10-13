@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>کارت‌های بانکی</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --card-aspect-ratio: 1.586;
+            --card-border-radius: 20px;
+        }
+
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+        }
+
+        .card-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .card {
+            position: relative;
+            width: 100%;
+            aspect-ratio: var(--card-aspect-ratio);
+            border-radius: var(--card-border-radius);
+            color: white;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 25px;
+            box-sizing: border-box;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5px;
+        }
+
+        .card-bottom {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0 5px;
+        }
+
+        .card-details {
+            text-align: center;
+        }
+
+        .chip {
+            width: 50px;
+            height: auto;
+        }
+
+        .bank-logo {
+            max-height: 40px;
+            max-width: 100px;
+        }
+
+        .card-number {
+            font-size: 1.6em;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 4px;
+            direction: ltr;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            margin: 0;
+            font-family: 'Courier New', Courier, monospace;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border-radius: 5px;
+            padding: 5px 0;
+        }
+        .card-number:hover {
+            background-color: rgba(0,0,0,0.1);
+            transform: scale(1.02);
+        }
+
+        .card-details {
+            font-size: 0.8em;
+            direction: ltr;
+        }
+        .card-details span {
+            font-size: 0.8em;
+            display: block;
+        }
+        .card-details p {
+            margin: 2px 0 0;
+            font-weight: 700;
+            font-size: 1.3em;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+        
+        .contactless-logo {
+            width: 30px;
+        }
+
+        .iban-section {
+            padding: 0 5px;
+            margin-top: -15px;
+        }
+
+        .iban {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.05em;
+            text-align: center;
+            letter-spacing: 1px;
+            direction: ltr;
+            margin: 0;
+            padding: 5px;
+            border-radius: 5px;
+            background-color: rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .iban:hover {
+            transform: scale(1.02);
+            background-color: rgba(0,0,0,0.12);
+        }
+
+        /* Bank Specific Styles */
+        .bank-mellat .card { background: linear-gradient(135deg, #f0f0f0, #D22136); color: #333; }
+        .bank-melli .card { background: linear-gradient(135deg, #f0f0f0, #E8D69A); color: #333; }
+        .bank-keshavarzi .card { background: linear-gradient(135deg, #f0f0f0, #2e7d32); color: #333; }
+        .bank-shahr .card { background: linear-gradient(135deg, #f0f0f0, #DD0000); color: #333; }
+
+        .card-wrapper .card-details span { color: rgba(0, 0, 0, 0.7); }
+        .card-wrapper .contactless-logo { filter: brightness(0.1); }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #28a745;
+            color: #fff;
+            padding: 12px 25px;
+            border-radius: 8px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -10px);
+        }
+
+        @media (max-width: 768px) {
+            .container { 
+                grid-template-columns: 1fr; 
+                gap: 30px; 
+                max-width: 450px;
+                margin: 0 auto;
+            }
+            .card { padding: 20px; }
+            .card-number { font-size: 1.4em; letter-spacing: 2px; }
+            .iban { font-size: 0.95em; letter-spacing: 0.5px; }
+            .iban-section { margin-top: -10px; }
+            body { padding: 20px; }
+        }
+
+        @media (max-width: 420px) {
+            .card { padding: 12px; }
+            .card-number { font-size: 1.1em; letter-spacing: 1px; }
+            .iban { font-size: 0.8em; letter-spacing: 0.5px; }
+            .card-details p { font-size: 1em; }
+            .chip { width: 35px; }
+            .bank-logo { max-height: 30px; }
+            .iban-section { margin-top: 0; }
+            .contactless-logo { width: 25px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+            <!-- Bank Mellat -->
+            <div class="card-wrapper bank-mellat">
+                <div class="card">
+                    <div class="card-top">
+                        <img src="img/chip.png" class="chip" alt="Chip">
+                        <img src="img/mellat-logo.svg" class="bank-logo" alt="Bank Mellat Logo">
+                    </div>
+                    <p class="card-number" id="mellat-card" onclick="copyToClipboard('mellat-card')">6104 3370 0000 0000</p>
+                    <div class="iban-section">
+                        <p class="iban" id="mellat-iban" onclick="copyToClipboard('mellat-iban')">IR100120000000000000000000</p>
+                    </div>
+                    <div class="card-bottom">
+                        <div class="card-details">
+                            <p>محمد نوروزی</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Bank Melli -->
+            <div class="card-wrapper bank-melli">
+                <div class="card">
+                    <div class="card-top">
+                        <img src="img/chip.png" class="chip" alt="Chip">
+                        <img src="img/melli-logo.svg" class="bank-logo" alt="Bank Melli Logo">
+                    </div>
+                    <p class="card-number" id="melli-card" onclick="copyToClipboard('melli-card')">6037 9970 0000 0000</p>
+                    <div class="iban-section">
+                        <p class="iban" id="melli-iban" onclick="copyToClipboard('melli-iban')">IR200170000000000000000000</p>
+                    </div>
+                    <div class="card-bottom">
+                        <div class="card-details">
+                            <p>محمد نوروزی</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Bank Keshavarzi -->
+            <div class="card-wrapper bank-keshavarzi">
+                <div class="card">
+                    <div class="card-top">
+                        <img src="img/chip.png" class="chip" alt="Chip">
+                        <img src="img/keshavarzi-logo.svg" class="bank-logo" alt="Bank Keshavarzi Logo">
+                    </div>
+                    <p class="card-number" id="keshavarzi-card" onclick="copyToClipboard('keshavarzi-card')">6037 7070 0000 0000</p>
+                    <div class="iban-section">
+                        <p class="iban" id="keshavarzi-iban" onclick="copyToClipboard('keshavarzi-iban')">IR300160000000000000000000</p>
+                    </div>
+                    <div class="card-bottom">
+                        <div class="card-details">
+                            <p>محمد نوروزی</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Bank Shahr -->
+            <div class="card-wrapper bank-shahr">
+                <div class="card">
+                    <div class="card-top">
+                        <img src="img/chip.png" class="chip" alt="Chip">
+                        <img src="img/shahr-logo.png" class="bank-logo" alt="Bank Shahr Logo">
+                    </div>
+                    <p class="card-number" id="shahr-card" onclick="copyToClipboard('shahr-card')">5028 0610 0000 0000</p>
+                    <div class="iban-section">
+                        <p class="iban" id="shahr-iban" onclick="copyToClipboard('shahr-iban')">IR400610000000000000000000</p>
+                    </div>
+                    <div class="card-bottom">
+                        <div class="card-details">
+                            <p>محمد نوروزی</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <div id="toast" class="toast">کپی شد!</div>
+
+    <script>
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            let textToCopy = '';
+
+            if (element.tagName.toLowerCase() === 'p' && (element.classList.contains('card-number') || element.classList.contains('iban'))) {
+                textToCopy = element.innerText.replace(/\s/g, '');
+            } else {
+                textToCopy = element.innerText;
+            }
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                showToast();
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
